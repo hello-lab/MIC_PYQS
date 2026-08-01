@@ -114,12 +114,12 @@ export default function IntakePage() {
           </span>
           <h1 className="font-pixel text-lg text-mahog mt-2">DEPOSIT NEW MANUSCRIPT</h1>
           <p className="text-xs text-iron/70 mt-1">
-            Client-side OCR verifies scroll contents locally before uploading to vault.
+            Client-side OCR verifies pdf contents locally before uploading to vault.
           </p>
         </div>
         <Link
           href="/"
-          className="px-4 py-2 bg-gold text-mahog font-pixel text-[9px] border-2 border-black pixel-btn shrink-0"
+          className="px-4 py-2 block  lg:hidden bg-gold text-mahog font-pixel text-[9px] border-2 border-black pixel-btn shrink-0"
         >
           « VAULT
         </Link>
@@ -213,7 +213,7 @@ export default function IntakePage() {
             <div className="space-y-2">
               <span className="text-3xl">📜</span>
               <p className="text-xs font-bold text-mahog">
-                {file ? file.name : 'Click or Drag PDF manuscript scroll here'}
+                {file ? file.name : 'Click or Drag PDF ARCHIVE here'}
               </p>
               {file && (
                 <p className="text-[10px] text-iron/60 font-mono">
@@ -227,7 +227,7 @@ export default function IntakePage() {
         {/* Status Messaging */}
         {statusState === 'CLIENT_OCR' && (
           <div className="p-4 bg-gold/20 border-2 border-black font-pixel text-[9px] text-mahog animate-pulse">
-            🔍 VERIFYING SCROLL TEXT LOCALLY IN BROWSER...
+            🔍 VERIFYING PDF TEXT LOCALLY IN BROWSER...
           </div>
         )}
 
@@ -269,7 +269,7 @@ export default function IntakePage() {
             disabled={statusState === 'CLIENT_OCR' || statusState === 'UPLOADING'}
             className="w-full py-4 bg-gold text-mahog font-pixel text-[10px] border-2 border-black pixel-btn disabled:opacity-50"
           >
-            VERIFY OCR & DEPOSIT SCROLL
+            VERIFY OCR & DEPOSIT ARCHOVE
           </button>
         </div>
       </form>

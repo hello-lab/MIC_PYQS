@@ -115,6 +115,8 @@ export default function MainPage() {
               <option value="CAT 2">CAT 2</option>
               <option value="FAT">FAT Final Exam</option>
             </select>
+                      <span><a className="px-2 block  lg:hidden py-3 bg-gold text-mahog font-pixel text-[9px] border-2 border-black pixel-btn shrink-0" href="/new_upload">NEW</a></span>
+
           </div>
         </div>
       </section>
@@ -134,7 +136,7 @@ export default function MainPage() {
                 <th className="text-left font-pixel text-[8px] p-4 uppercase tracking-tighter">
                   Term
                 </th>
-                <th className="text-left font-pixel text-[8px] p-4 uppercase tracking-tighter">
+                <th className="text-left font-pixel text-[8px] p-4 uppercase tracking-tighter hidden sm:block">
                   Status
                 </th>
                 
@@ -181,7 +183,7 @@ export default function MainPage() {
                       </div>
                     </td>
 
-                    <td className="p-4">
+                    <td className="p-4 hidden sm:table-cell">
                       <span className="px-2 py-1 bg-emerald/20 text-emerald border border-emerald/40 rounded text-[9px] font-pixel stamp">
                         VERIFIED
                       </span>
@@ -243,7 +245,7 @@ export default function MainPage() {
                 rel="noopener noreferrer"
                 className="flex-1 py-3 bg-gold text-mahog font-pixel text-[9px] border-2 border-black pixel-btn text-center"
               >
-                DOWNLOAD SCROLL
+                DOWNLOAD ARCHIVE
               </a>
               <button
                 onClick={() => setActiveModalItem(null)}
