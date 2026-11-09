@@ -12,8 +12,14 @@ export interface Manuscript {
   division: string;
   semester: string;
   term: string;
-  status: 'VERIFIED' | 'MISSING KEY' | 'PENDING AUDIT';
+  source: string;
+  status: 'VERIFIED' | 'MISSING KEY' | 'PENDING AUDIT' | 'REJECTED';
+  sheetRowNumber: number;
 }
+
+type ManuscriptFetchOptions = {
+  includeRejected?: boolean;
+};
 
 function getSchoolFromCourseCode(courseCode: string): string {
   const prefix = courseCode.substring(0, 3).toUpperCase();
@@ -41,32 +47,50 @@ function getSchoolFromCourseCode(courseCode: string): string {
   return SCHOOL_MAP[prefix] || `${prefix} Department`;
 }
 
-export async function getManuscriptsFromSheet(): Promise<Manuscript[]> {
+function getPrivateKey(): string {
+  const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY || '';
+  return rawPrivateKey.replace(/^["']|["']$/g, '').replace(/\\n/g, '\n');
+}
+
+function getSheetClient(readonly = true) {
+  const auth = new google.auth.GoogleAuth({
+    credentials: {
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      private_key: getPrivateKey(),
+    },
+    scopes: [
+      readonly
+        ? 'https://www.googleapis.com/auth/spreadsheets.readonly'
+        : 'https://www.googleapis.com/auth/spreadsheets',
+    ],
+  });
+
+  return google.sheets({ version: 'v4', auth });
+}
+
+function normalizeStatus(value: string): Manuscript['status'] {
+  const upper = value.trim().toUpperCase();
+  if (upper === 'REJECTED' || upper === 'MISSING KEY' || upper === 'PENDING AUDIT') {
+    return upper;
+  }
+
+  return 'VERIFIED';
+}
+
+export async function getManuscriptsFromSheet(
+  options: ManuscriptFetchOptions = {}
+): Promise<Manuscript[]> {
+  const { includeRejected = false } = options;
+
   try {
-    const rawPrivateKey = process.env.GOOGLE_PRIVATE_KEY || '';
-    const formattedPrivateKey = rawPrivateKey
-      .replace(/^["']|["']$/g, '')
-      .replace(/\\n/g, '\n');
-
-    const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: formattedPrivateKey,
-      },
-      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-    });
-
-    const sheets = google.sheets({ version: 'v4', auth });
-
-    // Range A2:G matches: ID, Filename, Course Code, Exam Type, Academic Year, Slot, Download Link
+    const sheets = getSheetClient(true);
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Sheet1!A2:G',
+      range: 'Sheet1!A2:I',
     });
 
     const rows = response.data.values || [];
-
-    return rows.map((row, idx) => {
+    const manuscripts: Manuscript[] = rows.map((row, idx) => {
       const id = String(row[0] ?? `REF-${idx + 1}`).trim();
       const filename = String(row[1] ?? 'Untitled.pdf').trim();
       const courseCode = String(row[2] ?? 'N/A').trim().toUpperCase();
@@ -74,6 +98,8 @@ export async function getManuscriptsFromSheet(): Promise<Manuscript[]> {
       const academicYear = String(row[4] ?? 'N/A').trim();
       const slot = String(row[5] ?? 'N/A').trim().toUpperCase();
       const downloadUrl = String(row[6] ?? '#').trim();
+      const source = String(row[7] ?? 'Vhelp').trim() || 'Vhelp';
+      const status = normalizeStatus(String(row[8] ?? 'VERIFIED'));
 
       return {
         id,
@@ -87,11 +113,61 @@ export async function getManuscriptsFromSheet(): Promise<Manuscript[]> {
         division: getSchoolFromCourseCode(courseCode),
         semester: `AY ${academicYear}`,
         term: examType,
-        status: 'VERIFIED',
+        source,
+        status,
+        sheetRowNumber: idx + 2,
       };
     });
+
+    if (includeRejected) {
+      return manuscripts;
+    }
+
+    return manuscripts.filter((item) => item.status !== 'REJECTED');
   } catch (error) {
     console.error('Error fetching Google Sheets data:', error);
     return [];
   }
+}
+
+export async function rejectManuscriptById(manuscriptId: string): Promise<void> {
+  await updateManuscriptStatusById(manuscriptId, 'REJECTED');
+}
+
+export async function unrejectManuscriptById(manuscriptId: string): Promise<void> {
+  await updateManuscriptStatusById(manuscriptId, 'VERIFIED');
+}
+
+async function updateManuscriptStatusById(
+  manuscriptId: string,
+  nextStatus: Manuscript['status']
+): Promise<void> {
+  const trimmedId = manuscriptId.trim();
+  if (!trimmedId) {
+    throw new Error('Manuscript ID is required.');
+  }
+
+  const sheets = getSheetClient(false);
+
+  const response = await sheets.spreadsheets.values.get({
+    spreadsheetId: process.env.GOOGLE_SHEET_ID,
+    range: 'Sheet1!A2:A',
+  });
+
+  const ids = response.data.values || [];
+  const rowIndex = ids.findIndex((row) => String(row[0] ?? '').trim() === trimmedId);
+
+  if (rowIndex < 0) {
+    throw new Error(`Manuscript with ID ${trimmedId} not found.`);
+  }
+
+  const sheetRowNumber = rowIndex + 2;
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: process.env.GOOGLE_SHEET_ID,
+    range: `Sheet1!I${sheetRowNumber}:I${sheetRowNumber}`,
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [[nextStatus]],
+    },
+  });
 }

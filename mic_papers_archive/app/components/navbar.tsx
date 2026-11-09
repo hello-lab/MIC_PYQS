@@ -13,6 +13,7 @@ interface NavLinkItem {
 const NAV_LINKS: NavLinkItem[] = [
   { href: '/', label: 'Main Vault', icon: '🏠' },
   { href: '/new_upload', label: 'Submit New Papers', icon: '📜' },
+  { href: '/admin', label: 'Admin Panel', icon: '🛡️' },
 ];
 
 export default function Sidebar({ logoUrl }: { logoUrl: string }) {
@@ -49,11 +50,12 @@ export default function Sidebar({ logoUrl }: { logoUrl: string }) {
         {NAV_LINKS.map((link) => {
           // Dynamic active check
           const isActive = pathname === link.href;
-
+          const isAdminActive = pathname.startsWith('/admin') && link.href === '/admin';
           return (
             <Link
               key={link.href}
               href={link.href}
+              hidden={link.href === '/admin' && !isAdminActive}
               className={`flex items-center gap-4 px-4 py-3 transition-colors group ${
                 isActive
                   ? 'bg-gold/10 border-2 border-gold/30 text-gold'

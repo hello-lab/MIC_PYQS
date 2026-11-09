@@ -70,6 +70,15 @@ export default function MainPage() {
     setCurrentPage(1);
   }, [searchQuery, selectedDivision, selectedTerm]);
 
+  const getDownloadWithFooterUrl = (item: Manuscript) => {
+    const params = new URLSearchParams({
+      url: item.downloadUrl || '#',
+      filename: item.filename || 'manuscript.pdf',
+    });
+
+    return `/api/manuscripts/download?${params.toString()}`;
+  };
+
   return (
     <div className="max-w-[1200px] mx-auto space-y-8">
     
@@ -139,13 +148,16 @@ export default function MainPage() {
                 <th className="text-left font-pixel text-[8px] p-4 uppercase tracking-tighter hidden sm:block">
                   Status
                 </th>
+                <th className="text-left font-pixel text-[8px] p-4 uppercase tracking-tighter hidden md:table-cell">
+                  Source
+                </th>
                 
               </tr>
             </thead>
             <tbody className="divide-y divide-black/10">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center font-pixel text-xs text-mahog">
+                  <td colSpan={6} className="p-8 text-center font-pixel text-xs text-mahog">
                     UNFURLING SCROLLS FROM GOOGLE SHEETS...
                   </td>
                 </tr>
@@ -185,8 +197,12 @@ export default function MainPage() {
 
                     <td className="p-4 hidden sm:table-cell">
                       <span className="px-2 py-1 bg-emerald/20 text-emerald border border-emerald/40 rounded text-[9px] font-pixel stamp">
-                        VERIFIED
+                        {item.status}
                       </span>
+                    </td>
+
+                    <td className="p-4 hidden md:table-cell">
+                      <span className="text-[10px] font-bold text-iron uppercase">{item.source || 'Vhelp'}</span>
                     </td>
 
                     
@@ -194,7 +210,7 @@ export default function MainPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-iron/50 font-bold uppercase">
+                  <td colSpan={6} className="p-8 text-center text-iron/50 font-bold uppercase">
                     No manuscripts match your query.
                   </td>
                 </tr>
@@ -240,9 +256,7 @@ export default function MainPage() {
 
             <div className="pt-4 border-t-2 border-black/20 flex gap-4">
               <a
-                href={activeModalItem.downloadUrl || '#'}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={getDownloadWithFooterUrl(activeModalItem)}
                 className="flex-1 py-3 bg-gold text-mahog font-pixel text-[9px] border-2 border-black pixel-btn text-center"
               >
                 DOWNLOAD ARCHIVE

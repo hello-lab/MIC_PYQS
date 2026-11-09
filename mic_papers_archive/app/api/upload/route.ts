@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
         examType,
         academicYear,
         slot,
+        source: 'Vhelp',
+        status: 'VERIFIED',
         fileBase64: base64File,
       }),
     });
