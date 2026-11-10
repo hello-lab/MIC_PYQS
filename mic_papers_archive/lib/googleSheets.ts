@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { getCourseTitle } from './courseTitles';
 
 export interface Manuscript {
   id: string;
@@ -105,7 +106,7 @@ export async function getManuscriptsFromSheet(
         id,
         filename,
         courseCode,
-        courseTitle: `${courseCode} Paper (${examType})`,
+        courseTitle: getCourseTitle(courseCode) ?? `${courseCode} Paper (${examType})`,
         examType,
         academicYear,
         slot,
