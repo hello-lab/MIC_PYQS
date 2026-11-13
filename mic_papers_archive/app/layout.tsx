@@ -21,8 +21,8 @@ const courierPrime = Courier_Prime({
 });
 
 export const metadata: Metadata = {
-  title: 'MIC_PYQs Vault — Archived Scrolls',
-  description: 'Previous Year Question Papers Archive Division by MIC Innovations',
+  title: 'MIC PYQs — Previous Year Questions',
+  description: 'Previous Year Question Papers by Microsoft Innovations Club',
 };
 
 interface RootLayoutProps {
@@ -72,7 +72,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           {/* STICKY TOP HEADER */}
           <header className="bg-mahog text-vellum px-8 py-4 flex items-center justify-between border-b-4 border-black sticky top-0 z-40">
             <div className="flex items-center gap-6">
-              <div className="lg:hidden p-1 bg-white rounded-full">
+              <div className="lg:hidden">
                 <Image
                   src={logoUrl}
                   alt="MIC Logo"
@@ -83,7 +83,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </div>
               <div>
                 <h1 className="font-pixel text-xl text-gold uppercase">
-                  THE GREAT ARCHIVE
+                  PREVIOUS YEAR QUESTIONS
                 </h1>
                 <div className="flex items-center gap-2 mt-1">
                   

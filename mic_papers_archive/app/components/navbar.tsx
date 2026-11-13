@@ -24,7 +24,7 @@ export default function Sidebar({ logoUrl }: { logoUrl: string }) {
       {/* Brand Header */}
       <div className="p-8 border-b-4 border-black bg-mahogLight">
         <div className="flex flex-col items-center gap-4 text-center">
-          <div className="p-2 bg-white rounded-full pixel-border-sm relative w-24 h-24 flex items-center justify-center">
+          <div className="relative w-24 h-24 flex items-center justify-center">
             <Image
               src={logoUrl}
               alt="MIC Logo"
@@ -36,11 +36,8 @@ export default function Sidebar({ logoUrl }: { logoUrl: string }) {
           </div>
           <div>
             <h2 className="font-pixel text-[10px] text-gold leading-tight uppercase">
-              MIC INNOVATIONS
+              MICROSOFT INNOVATIONS CLUB
             </h2>
-            <p className="text-[8px] text-amber-200/50 mt-2 tracking-widest font-pixel">
-              ARCHIVE DIVISION
-            </p>
           </div>
         </div>
       </div>
