@@ -27,7 +27,7 @@ export default function Sidebar({ logoUrl }: { logoUrl: string }) {
           <div className="relative w-24 h-24 flex items-center justify-center">
             <Image
               src={logoUrl}
-              alt="MIC Logo"
+              alt="Microsoft Innovations Club logo"
               width={80}
               height={80}
               className="object-contain"

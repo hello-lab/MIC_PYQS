@@ -56,7 +56,7 @@ const SUBJECT_LINKS: SubjectLinkItem[] = [
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const logoUrl =
-    '/globe.svg';
+    '/logo.png';
 
   return (
     <html
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
               <div className="lg:hidden">
                 <Image
                   src={logoUrl}
-                  alt="MIC Logo"
+                  alt="Microsoft Innovations Club logo"
                   width={32}
                   height={32}
                   className="object-contain"
